@@ -106,25 +106,70 @@
 //   }
 // }
 
+// import 'dart:io';
+// import 'package:shelf/shelf.dart';
+// import 'package:shelf/shelf_io.dart' as io;
+// import 'package:shelf_static/shelf_static.dart';
+
+// void main() async {
+//   const certificate = "C:/Users/PHILIP/philip.crt";
+//   const privateKey = "C:/Users/PHILIP/philip.key";
+
+//   final staticHandler =
+//       createStaticHandler('build/web', defaultDocument: 'index.html');
+//   final cascadeHandler = Cascade().add(staticHandler).handler;
+
+//   final server = await io.serve(cascadeHandler, 'localhost', 8080,
+//       securityContext: SecurityContext()
+//         ..useCertificateChain(certificate)
+//         ..usePrivateKey(privateKey));
+
+//   print('Serving at https://${server.address.host}:${server.port}');
+// }
+
 import 'dart:io';
-import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_static/shelf_static.dart';
 
-void main() async {
-  const certificate = "C:/Users/PHILIP/philip.crt";
-  const privateKey = "C:/Users/PHILIP/philip.key";
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-  final staticHandler =
-      createStaticHandler('build/web', defaultDocument: 'index.html');
-  final cascadeHandler = Cascade().add(staticHandler).handler;
-
-  final server = await io.serve(cascadeHandler, 'localhost', 8080,
-      securityContext: SecurityContext()
-        ..useCertificateChain(certificate)
-        ..usePrivateKey(privateKey));
-
-  print('Serving at https://${server.address.host}:${server.port}');
+void main() {
+  runApp(MyApp());
 }
+
+class MyApp extends StatelessWidget {
+  Future<void> _loadCertificate() async {
+    ByteData data = await rootBundle.load('assets/certificate.crt');
+    Uint8List bytes = data.buffer.asUint8List();
+    File file = await File('certificate.crt').writeAsBytes(bytes);
+    // Use the file object as needed (e.g. pass it to an HTTPS client)
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Flutter Demo'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Press the button to load the certificate',
+              ),
+              ElevatedButton(
+                onPressed: _loadCertificate,
+                child: const Text('Load Certificate'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 
